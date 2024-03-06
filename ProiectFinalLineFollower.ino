@@ -17,21 +17,25 @@
 #define s3 13
 #define line_sensor_pin A0 // Analog input pin
 
-int value;
-unsigned int XlineSensorValues[16];
-// RGB lights
-#include <Adafruit_NeoPixel.h>
 #define neopixel_pin 10
 #define num_pixels 16
+#define buzzer_pin 9
+#define potentiometer_pin A2
+#define interval_ON 500
+#define interval_OFF 700
+
+int value;
+unsigned int XlineSensorValues[16];
+
+// RGB lights
+#include <Adafruit_NeoPixel.h>
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(num_pixels, neopixel_pin, NEO_GRB + NEO_KHZ800);
+
 // buzzer
 int melody[] = {262, 196, 196, 220, 196, 0, 247, 262}; //frecvente de note muzicale
 int noteDurations[] = {4, 8, 8, 4, 4, 4, 4, 4 };
-#define buzzer_pin 9
-#define potentiometer_pin A2
 int motor_speed = 128;
-#define interval_ON 500
-#define interval_OFF 700
+
 long unsigned previousMillis = 0; //pentru masurarea unor intervale
 int interval_line_sensor = 10000; //definirea intervalului pentru masurarea line sensor
 int interval_distance_sensor = 20000; //definirea intervalului pentru masurarea distantei
@@ -76,38 +80,7 @@ void setup() {
 void loop() {
   int pot_value = analogRead(potentiometer_pin); //citirea valorii de la potentiometru
   motor_speed = 200;
-  //Serial.println(motor_speed);
-  /*
-  if (millis() - previousMillis > interval_line_sensor) {
-    if (millis() - previousMillis > interval_distance_sensor) {
-      move_robot_forward();            //Executes third
-      delay(interval_ON);
-      delayStopped(interval_OFF);
-      move_robot_backward();
-      delay(interval_ON);
-      delayStopped(interval_OFF);
-      move_robot_left();
-      delay(interval_ON);
-      delayStopped(interval_OFF);
-      move_robot_right();
-      delay(interval_ON);
-      delayStopped(interval_OFF);
-      previousMillis=millis();
-      clear_leds();
-    } else {
-      check_distance();                 //Executes second
-    }
-  } else {
-    check_robot_position_and_redress(); //Executes first
-  }
-  */
   check_robot_position_and_redress(); //Executes first
-
-//  if ( measure_distance() < 30 )
-//    {
-//        delayStopped(1000);
-//    } 
-}
 
 // Funcție pentru controlul unui motor. Intrare: cei doi pini ai unui motor, direcția (0/1) și viteza de rotatie a motorului (semnal PWM)
 void StartMotor (int m1, int m2, int forward, int speed)
@@ -414,13 +387,7 @@ void read_line_sensor() {
 
 void check_robot_position_and_redress() {
   read_line_sensor();
-
-//    if ( measure_distance() < 30 )
-//    {
-//        delayStopped(1000);
-//    } 
   
-  //TO DO: aici trebuie verificate valorile de la senzorul de linie
   //Daca robotul este centrat (adica citeste linia cu senzorii din mijloc - valori sub 500), atunci motoarele mers in fata cu aceeasi viteza
   if (XlineSensorValues[7] > 750 || XlineSensorValues[8] > 750) {
     move_robot_forward();
